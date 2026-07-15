@@ -1,4 +1,29 @@
-import React, { useState, useEffect, useMemo } from 'react';
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aura Academic — ระบบคำนวณเกรดและคาดการณ์เกียรตินิยม</title>
+<meta name="description" content="ระบบจำลองการคำนวณ GPA และคาดการณ์เกียรตินิยม สไตล์ Neumorphism" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  html, body, #root { min-height: 100%; }
+  body { font-family: 'IBM Plex Sans Thai', system-ui, -apple-system, sans-serif; margin: 0; }
+  .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  #boot { display:flex; align-items:center; justify-content:center; height:100vh; color:#94A3B8; font-size:14px; background:#0F172A; }
+</style>
+</head>
+<body>
+<div id="root"><div id="boot">กำลังโหลด Aura Academic…</div></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useMemo } = React;
 
 // ==========================================
 // MOCK DATA & CONSTANTS
@@ -34,21 +59,16 @@ const GRADE_VALUES = {
 };
 
 const INITIAL_SUBJECTS = [
-  // ปี 1 เทอม 1
   { id: '1', code: 'THA101', name: 'ภาษาไทยเพื่อการสื่อสาร', credits: 3, grade: 'A', category: 'general', subcategory: 'thai', year: 1, semester: '1' },
   { id: '2', code: 'ENG101', name: 'ภาษาอังกฤษพื้นฐาน 1', credits: 3, grade: 'B+', category: 'general', subcategory: 'foreign', year: 1, semester: '1' },
   { id: '3', code: 'MTH101', name: 'แคลคูลัส 1', credits: 3, grade: 'B', category: 'general', subcategory: 'math', year: 1, semester: '1' },
   { id: '4', code: 'SCI101', name: 'ฟิสิกส์ทั่วไป', credits: 3, grade: 'C+', category: 'general', subcategory: 'science', year: 1, semester: '1' },
   { id: '5', code: 'CORE101', name: 'การเขียนโปรแกรมคอมพิวเตอร์พื้นฐาน', credits: 3, grade: 'A', category: 'core', subcategory: '', year: 1, semester: '1' },
-  
-  // ปี 1 เทอม 2
   { id: '6', code: 'ENG102', name: 'ภาษาอังกฤษพื้นฐาน 2', credits: 3, grade: 'A', category: 'general', subcategory: 'foreign', year: 1, semester: '2' },
   { id: '7', code: 'HUM101', name: 'อารยธรรมมนุษย์และการคิดสร้างสรรค์', credits: 3, grade: 'A', category: 'general', subcategory: 'humanities', year: 1, semester: '2' },
   { id: '8', code: 'SOC101', name: 'สังคมร่วมสมัยและการเปลี่ยนแปลง', credits: 3, grade: 'B', category: 'general', subcategory: 'social', year: 1, semester: '2' },
   { id: '9', code: 'CORE102', name: 'โครงสร้างข้อมูลและอัลกอริทึม', credits: 3, grade: 'A', category: 'core', subcategory: '', year: 1, semester: '2' },
   { id: '10', code: 'SPEC201', name: 'การพัฒนาเว็บแอปพลิเคชันระดับสูง', credits: 3, grade: 'B+', category: 'specialized', subcategory: 'compulsory', year: 1, semester: '2' },
-
-  // ปี 2 เทอม 1
   { id: '11', code: 'CORE201', name: 'ระบบฐานข้อมูลและการจัดการสารสนเทศ', credits: 3, grade: 'B+', category: 'core', subcategory: '', year: 2, semester: '1' },
   { id: '12', code: 'SPEC202', name: 'การออกแบบซอฟต์แวร์เชิงวัตถุ', credits: 3, grade: 'A', category: 'specialized', subcategory: 'compulsory', year: 2, semester: '1' },
   { id: '13', code: 'SPEC203', name: 'วิศวกรรมความต้องการซอฟต์แวร์', credits: 3, grade: 'A', category: 'specialized', subcategory: 'compulsory', year: 2, semester: '1' },
@@ -57,101 +77,66 @@ const INITIAL_SUBJECTS = [
 
 const THEMES = {
   spaceBlue: {
-    id: 'spaceBlue',
-    name: 'Deep Space Blue',
-    bg: '#0F172A',
-    surface: '#1E293B',
-    primary: '#7083FF',
-    secondary: '#8AA9FF',
-    accent: '#FFD166',
-    highlight: '#6EE7FF',
-    text: '#F8FAFC',
-    textMuted: '#94A3B8',
-    shadowDark: 'rgba(5, 8, 16, 0.8)',
-    shadowLight: 'rgba(255, 255, 255, 0.04)'
+    id: 'spaceBlue', name: 'Deep Space Blue',
+    bg: '#0F172A', surface: '#1E293B', primary: '#7083FF', secondary: '#8AA9FF',
+    accent: '#FFD166', highlight: '#6EE7FF', text: '#F8FAFC', textMuted: '#94A3B8',
+    shadowDark: 'rgba(5, 8, 16, 0.8)', shadowLight: 'rgba(255, 255, 255, 0.04)'
   },
   oceanBreeze: {
-    id: 'oceanBreeze',
-    name: 'Ocean Breeze',
-    bg: '#E0E7FF',
-    surface: '#EEF2FF',
-    primary: '#4F46E5',
-    secondary: '#6366F1',
-    accent: '#D97706',
-    highlight: '#06B6D4',
-    text: '#1E1B4B',
-    textMuted: '#4F46E5',
-    shadowDark: 'rgba(165, 180, 252, 0.5)',
-    shadowLight: 'rgba(255, 255, 255, 0.9)'
+    id: 'oceanBreeze', name: 'Ocean Breeze',
+    bg: '#E0E7FF', surface: '#EEF2FF', primary: '#4F46E5', secondary: '#6366F1',
+    accent: '#D97706', highlight: '#06B6D4', text: '#1E1B4B', textMuted: '#4F46E5',
+    shadowDark: 'rgba(165, 180, 252, 0.5)', shadowLight: 'rgba(255, 255, 255, 0.9)'
   },
   mysticAmethyst: {
-    id: 'mysticAmethyst',
-    name: 'Mystic Amethyst',
-    bg: '#18122B',
-    surface: '#393053',
-    primary: '#C8C9FF',
-    secondary: '#9F7AEA',
-    accent: '#FFD166',
-    highlight: '#E2E8F0',
-    text: '#F5F3FF',
-    textMuted: '#A5B4FC',
-    shadowDark: 'rgba(0, 0, 0, 0.6)',
-    shadowLight: 'rgba(255, 255, 255, 0.05)'
+    id: 'mysticAmethyst', name: 'Mystic Amethyst',
+    bg: '#18122B', surface: '#393053', primary: '#C8C9FF', secondary: '#9F7AEA',
+    accent: '#FFD166', highlight: '#E2E8F0', text: '#F5F3FF', textMuted: '#A5B4FC',
+    shadowDark: 'rgba(0, 0, 0, 0.6)', shadowLight: 'rgba(255, 255, 255, 0.05)'
   },
   minimalWarm: {
-    id: 'minimalWarm',
-    name: 'Minimal Warm',
-    bg: '#FAF8F5',
-    surface: '#F4EFEA',
-    primary: '#4A5568',
-    secondary: '#718096',
-    accent: '#DD6B20',
-    highlight: '#319795',
-    text: '#2D3748',
-    textMuted: '#718096',
-    shadowDark: 'rgba(160, 140, 120, 0.25)',
-    shadowLight: 'rgba(255, 255, 255, 0.95)'
+    id: 'minimalWarm', name: 'Minimal Warm',
+    bg: '#FAF8F5', surface: '#F4EFEA', primary: '#4A5568', secondary: '#718096',
+    accent: '#DD6B20', highlight: '#319795', text: '#2D3748', textMuted: '#718096',
+    shadowDark: 'rgba(160, 140, 120, 0.25)', shadowLight: 'rgba(255, 255, 255, 0.95)'
   },
   sunsetCyber: {
-    id: 'sunsetCyber',
-    name: 'Sunset Cyber',
-    bg: '#0F0E17',
-    surface: '#242132',
-    primary: '#FF8906',
-    secondary: '#F25F4C',
-    accent: '#E53E3E',
-    highlight: '#90CDF4',
-    text: '#FFFFFE',
-    textMuted: '#A7A9BE',
-    shadowDark: 'rgba(0, 0, 0, 0.7)',
-    shadowLight: 'rgba(255, 255, 255, 0.03)'
+    id: 'sunsetCyber', name: 'Sunset Cyber',
+    bg: '#0F0E17', surface: '#242132', primary: '#FF8906', secondary: '#F25F4C',
+    accent: '#E53E3E', highlight: '#90CDF4', text: '#FFFFFE', textMuted: '#A7A9BE',
+    shadowDark: 'rgba(0, 0, 0, 0.7)', shadowLight: 'rgba(255, 255, 255, 0.03)'
   }
 };
 
-export default function App() {
-  const [currentTheme, setCurrentTheme] = useState('spaceBlue');
+// safe localStorage wrapper (file:// / privacy-mode safe)
+const store = {
+  get(key) { try { return window.localStorage.getItem(key); } catch (e) { return null; } },
+  set(key, val) { try { window.localStorage.setItem(key, val); } catch (e) {} }
+};
+
+function App() {
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    const t = store.get('aura_theme');
+    return t && THEMES[t] ? t : 'spaceBlue';
+  });
   const theme = THEMES[currentTheme];
 
-  // Subjects Management State
   const [subjects, setSubjects] = useState(() => {
-    const saved = localStorage.getItem('aura_subjects');
-    return saved ? JSON.parse(saved) : INITIAL_SUBJECTS;
+    const saved = store.get('aura_subjects');
+    try { return saved ? JSON.parse(saved) : INITIAL_SUBJECTS; } catch (e) { return INITIAL_SUBJECTS; }
   });
 
-  // Database / Supabase Simulator States
-  const [dbStatus, setDbStatus] = useState('syncing'); // 'syncing', 'connected', 'error'
-  const [userSession, setUserSession] = useState({
+  const [dbStatus, setDbStatus] = useState('syncing');
+  const [userSession] = useState({
     email: 'academic.dreamer@university.edu',
     studentId: '6609612345',
     fullName: 'อัครพล เกียรตินิยมเลิศ'
   });
 
-  // UI States
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'subjects', 'analytics', 'predict'
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
 
-  // Form Fields State
   const [formCode, setFormCode] = useState('');
   const [formName, setFormName] = useState('');
   const [formCredits, setFormCredits] = useState(3);
@@ -161,38 +146,27 @@ export default function App() {
   const [formYear, setFormYear] = useState(1);
   const [formSemester, setFormSemester] = useState('1');
 
-  // Interactive Honor Toggles
   const [hasFGrade, setHasFGrade] = useState(false);
   const [studyExceeded, setStudyExceeded] = useState(false);
   const [repeatedCourse, setRepeatedCourse] = useState(false);
 
-  // Auto Sync mock database status effect
+  useEffect(() => { store.set('aura_theme', currentTheme); }, [currentTheme]);
+
   useEffect(() => {
-    localStorage.setItem('aura_subjects', JSON.stringify(subjects));
+    store.set('aura_subjects', JSON.stringify(subjects));
     setDbStatus('syncing');
-    const timer = setTimeout(() => {
-      setDbStatus('connected');
-    }, 800);
+    const timer = setTimeout(() => setDbStatus('connected'), 800);
     return () => clearTimeout(timer);
   }, [subjects]);
 
-  // Check if any added course is an 'F' to auto-trigger the F condition
   useEffect(() => {
-    const hasF = subjects.some(s => s.grade === 'F');
-    if (hasF) {
-      setHasFGrade(true);
-    }
+    if (subjects.some(s => s.grade === 'F')) setHasFGrade(true);
   }, [subjects]);
 
-  // Handle Form Change based on selected category to set reasonable default subcategory
   useEffect(() => {
-    if (formCategory === 'general') {
-      setFormSubcategory('thai');
-    } else if (formCategory === 'specialized') {
-      setFormSubcategory('compulsory');
-    } else {
-      setFormSubcategory('');
-    }
+    if (formCategory === 'general') setFormSubcategory('thai');
+    else if (formCategory === 'specialized') setFormSubcategory('compulsory');
+    else setFormSubcategory('');
   }, [formCategory]);
 
   // ==========================================
@@ -203,7 +177,6 @@ export default function App() {
     let totalGradePoints = 0;
     let gpaCredits = 0;
 
-    // Categorized variables
     const categoryCredits = {
       general: { total: 0, thai: 0, foreign: 0, science: 0, math: 0, social: 0, humanities: 0 },
       core: { total: 0 },
@@ -215,11 +188,9 @@ export default function App() {
       const cred = Number(subject.credits);
       const val = GRADE_VALUES[subject.grade];
 
-      // Add to category completion credits (if not W)
       if (subject.grade !== 'W') {
         totalEarnedCredits += cred;
-        
-        // Accumulate specific category credits
+
         if (subject.category === 'general') {
           categoryCredits.general.total += cred;
           if (subject.subcategory && categoryCredits.general[subject.subcategory] !== undefined) {
@@ -236,8 +207,7 @@ export default function App() {
           categoryCredits.free.total += cred;
         }
 
-        // Grade Point Average Calculation (exclude W from GPA computation)
-        if (val !== null) {
+        if (val !== null && val !== undefined) {
           totalGradePoints += (val * cred);
           gpaCredits += cred;
         }
@@ -246,7 +216,6 @@ export default function App() {
 
     const gpac = gpaCredits > 0 ? (totalGradePoints / gpaCredits) : 0;
 
-    // Term-by-Term Calculations
     const termsMap = {};
     subjects.forEach(s => {
       const termKey = `Y${s.year}S${s.semester}`;
@@ -255,28 +224,23 @@ export default function App() {
       }
       const cred = Number(s.credits);
       const val = GRADE_VALUES[s.grade];
-      if (s.grade !== 'W' && val !== null) {
+      if (s.grade !== 'W' && val !== null && val !== undefined) {
         termsMap[termKey].points += (val * cred);
         termsMap[termKey].gpaCredits += cred;
       }
-      if (s.grade !== 'W') {
-        termsMap[termKey].credits += cred;
-      }
+      if (s.grade !== 'W') termsMap[termKey].credits += cred;
     });
 
-    const termPerformance = Object.keys(termsMap)
-      .sort()
-      .map(key => {
-        const t = termsMap[key];
-        return {
-          key,
-          label: t.label,
-          gpa: t.gpaCredits > 0 ? Number((t.points / t.gpaCredits).toFixed(2)) : 0,
-          credits: t.credits
-        };
-      });
+    const termPerformance = Object.keys(termsMap).sort().map(key => {
+      const t = termsMap[key];
+      return {
+        key,
+        label: t.label,
+        gpa: t.gpaCredits > 0 ? Number((t.points / t.gpaCredits).toFixed(2)) : 0,
+        credits: t.credits
+      };
+    });
 
-    // Predict Honors
     let honorStatus = 'ไม่มีสิทธิ์';
     let honorMessage = '';
     const hasDisqualifyingFactors = hasFGrade || studyExceeded || repeatedCourse;
@@ -319,77 +283,56 @@ export default function App() {
   // ==========================================
   const handleOpenAddModal = () => {
     setEditingSubject(null);
-    setFormCode('');
-    setFormName('');
-    setFormCredits(3);
-    setFormGrade('A');
-    setFormCategory('general');
-    setFormSubcategory('thai');
-    setFormYear(1);
-    setFormSemester('1');
+    setFormCode(''); setFormName(''); setFormCredits(3); setFormGrade('A');
+    setFormCategory('general'); setFormSubcategory('thai'); setFormYear(1); setFormSemester('1');
     setShowAddModal(true);
   };
 
   const handleOpenEditModal = (subj) => {
     setEditingSubject(subj);
-    setFormCode(subj.code);
-    setFormName(subj.name);
-    setFormCredits(subj.credits);
-    setFormGrade(subj.grade);
-    setFormCategory(subj.category);
-    setFormSubcategory(subj.subcategory || '');
-    setFormYear(subj.year);
-    setFormSemester(subj.semester);
+    setFormCode(subj.code); setFormName(subj.name); setFormCredits(subj.credits);
+    setFormGrade(subj.grade); setFormCategory(subj.category);
+    setFormSubcategory(subj.subcategory || ''); setFormYear(subj.year); setFormSemester(subj.semester);
     setShowAddModal(true);
   };
 
-  const handleDeleteSubject = (id) => {
-    setSubjects(subjects.filter(s => s.id !== id));
-  };
+  const handleDeleteSubject = (id) => setSubjects(subjects.filter(s => s.id !== id));
 
   const handleSaveSubject = (e) => {
     e.preventDefault();
     if (!formCode || !formName) return;
 
     if (editingSubject) {
-      // Edit mode
       setSubjects(subjects.map(s => s.id === editingSubject.id ? {
         ...s,
-        code: formCode.toUpperCase(),
-        name: formName,
-        credits: Number(formCredits),
-        grade: formGrade,
-        category: formCategory,
-        subcategory: formSubcategory,
-        year: Number(formYear),
-        semester: formSemester
+        code: formCode.toUpperCase(), name: formName, credits: Number(formCredits),
+        grade: formGrade, category: formCategory, subcategory: formSubcategory,
+        year: Number(formYear), semester: formSemester
       } : s));
     } else {
-      // Add mode
-      const newSubj = {
+      setSubjects([...subjects, {
         id: Date.now().toString(),
-        code: formCode.toUpperCase(),
-        name: formName,
-        credits: Number(formCredits),
-        grade: formGrade,
-        category: formCategory,
-        subcategory: formSubcategory,
-        year: Number(formYear),
-        semester: formSemester
-      };
-      setSubjects([...subjects, newSubj]);
+        code: formCode.toUpperCase(), name: formName, credits: Number(formCredits),
+        grade: formGrade, category: formCategory, subcategory: formSubcategory,
+        year: Number(formYear), semester: formSemester
+      }]);
     }
     setShowAddModal(false);
   };
 
   const handleResetDemoData = () => {
     setSubjects(INITIAL_SUBJECTS);
-    setHasFGrade(false);
-    setStudyExceeded(false);
-    setRepeatedCourse(false);
+    setHasFGrade(false); setStudyExceeded(false); setRepeatedCourse(false);
   };
 
-  // Create customized inline styles to control perfect neumorphic theme shadows dynamically
+  const sortedSubjects = useMemo(() => {
+    return [...subjects].sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      if (a.semester !== b.semester) return String(a.semester).localeCompare(String(b.semester));
+      return a.code.localeCompare(b.code);
+    });
+  }, [subjects]);
+
   const dynamicStyles = `
     :root {
       --bg-color: ${theme.bg};
@@ -403,7 +346,6 @@ export default function App() {
       --shadow-dark: ${theme.shadowDark};
       --shadow-light: ${theme.shadowLight};
     }
-    
     .neo-flat {
       background: var(--surface-color);
       box-shadow: 6px 6px 16px var(--shadow-dark), -6px -6px 16px var(--shadow-light);
@@ -435,7 +377,6 @@ export default function App() {
     <div className="min-h-screen py-6 px-4 md:px-8 font-sans transition-colors duration-300" style={{ backgroundColor: theme.bg, color: theme.text }}>
       <style>{dynamicStyles}</style>
 
-      {/* Header Info Panel */}
       <div className="max-w-6xl mx-auto mb-8">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
           <div>
@@ -446,7 +387,7 @@ export default function App() {
               <div className="flex items-center gap-1.5 text-xs">
                 <span className={`w-2.5 h-2.5 rounded-full inline-block ${dbStatus === 'connected' ? 'bg-green-400 animate-pulse' : 'bg-yellow-400 animate-spin'}`} />
                 <span style={{ color: theme.textMuted }}>
-                  {dbStatus === 'connected' ? 'Supabase Synced (Live Simulation)' : 'Syncing state...'}
+                  {dbStatus === 'connected' ? 'บันทึกข้อมูลในเครื่องแล้ว (Local Storage)' : 'กำลังบันทึก...'}
                 </span>
               </div>
             </div>
@@ -458,10 +399,9 @@ export default function App() {
             </p>
           </div>
 
-          {/* Theme Switcher & Reset Button Row */}
           <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
-            <button 
-              onClick={handleResetDemoData} 
+            <button
+              onClick={handleResetDemoData}
               className="neo-btn text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5"
               title="ย้อนข้อมูลตัวอย่าง"
             >
@@ -469,7 +409,6 @@ export default function App() {
               คืนค่าข้อมูลเริ่มต้น
             </button>
 
-            {/* Config Theme selector container */}
             <div className="neo-pressed p-1.5 rounded-2xl flex items-center gap-1">
               {Object.keys(THEMES).map((key) => (
                 <button
@@ -489,9 +428,7 @@ export default function App() {
         {/* User Card */}
         <div className="neo-flat p-5 rounded-3xl mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl neo-pressed flex items-center justify-center text-2xl">
-              🔮
-            </div>
+            <div className="w-14 h-14 rounded-2xl neo-pressed flex items-center justify-center text-2xl">🔮</div>
             <div>
               <h2 className="text-lg font-bold">{userSession.fullName}</h2>
               <p className="text-xs" style={{ color: theme.textMuted }}>รหัสประจำตัว: {userSession.studentId} • หลักสูตรวิทยาศาสตรบัณฑิต (133 หน่วยกิต)</p>
@@ -499,12 +436,12 @@ export default function App() {
           </div>
           <div className="text-right w-full sm:w-auto">
             <span className="text-xs px-3 py-1.5 rounded-xl inline-block neo-pressed font-medium" style={{ color: theme.highlight }}>
-              Supabase User: {userSession.email}
+              {userSession.email}
             </span>
           </div>
         </div>
 
-        {/* Tab Navigation Menu */}
+        {/* Tabs */}
         <div className="neo-pressed p-2 rounded-2xl flex flex-wrap gap-2 mb-8">
           {[
             { id: 'dashboard', label: 'ภาพรวมบอร์ด (Overview)', icon: '📊' },
@@ -515,9 +452,7 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-[120px] py-3 px-4 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
-                activeTab === tab.id ? 'neo-flat font-bold text-slate-100' : 'opacity-70 hover:opacity-100'
-              }`}
+              className={`flex-1 min-w-[120px] py-3 px-4 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === tab.id ? 'neo-flat font-bold' : 'opacity-70 hover:opacity-100'}`}
               style={{ color: activeTab === tab.id ? theme.primary : theme.text }}
             >
               <span>{tab.icon}</span>
@@ -526,16 +461,10 @@ export default function App() {
           ))}
         </div>
 
-        {/* ==========================================
-            TAB CONTENT: DASHBOARD
-            ========================================== */}
+        {/* DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
-            
-            {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              
-              {/* Cumulative GPA Card */}
               <div className="neo-flat p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-10 translate-x-6 -translate-y-6" style={{ background: theme.primary }} />
                 <div>
@@ -549,12 +478,11 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Earned Credits Card */}
               <div className="neo-flat p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden">
                 <div>
                   <span className="text-xs font-semibold block mb-2" style={{ color: theme.textMuted }}>หน่วยกิตที่สะสมได้</span>
                   <span className="text-4xl font-extrabold block tracking-tight" style={{ color: theme.highlight }}>
-                    {academicCalculations.totalEarnedCredits} <span className="text-lg font-normal text-slate-500">/ {CURRICULUM_LIMITS.total}</span>
+                    {academicCalculations.totalEarnedCredits} <span className="text-lg font-normal opacity-60">/ {CURRICULUM_LIMITS.total}</span>
                   </span>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-700/20">
@@ -568,7 +496,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Remaining Credits Card */}
               <div className="neo-flat p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden">
                 <div>
                   <span className="text-xs font-semibold block mb-2" style={{ color: theme.textMuted }}>หน่วยกิตที่เหลืออยู่</span>
@@ -581,7 +508,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Honor Status Predictor Card */}
               <div className="neo-flat p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden" style={{ borderLeft: `4px solid ${academicCalculations.honorStatus.includes('อันดับ') ? theme.highlight : '#FF4B4B'}` }}>
                 <div>
                   <span className="text-xs font-semibold block mb-2" style={{ color: theme.textMuted }}>คาดการณ์เกียรตินิยมปัจจุบัน</span>
@@ -593,37 +519,28 @@ export default function App() {
                   {academicCalculations.honorMessage}
                 </div>
               </div>
-
             </div>
 
-            {/* Curriculum Progress Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* Detailed Progress Bars */}
               <div className="neo-flat p-6 rounded-3xl lg:col-span-2 space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-700/20 pb-4">
                   <div>
                     <h3 className="font-extrabold text-lg">ตรวจสอบเกณฑ์หลักสูตรหลัก</h3>
                     <p className="text-xs" style={{ color: theme.textMuted }}>ความสมบูรณ์ของวิชาแต่ละหมวดหลัก</p>
                   </div>
-                  <span className="text-xs px-2.5 py-1 rounded-xl neo-pressed text-indigo-400 font-semibold">
+                  <span className="text-xs px-2.5 py-1 rounded-xl neo-pressed font-semibold" style={{ color: theme.primary }}>
                     133 หน่วยกิตทั้งหมด
                   </span>
                 </div>
 
-                {/* 1. General Education */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-bold">1. หมวดศึกษาทั่วไป (Gen-Ed)</span>
                     <span className="font-semibold text-xs">{academicCalculations.categoryCredits.general.total} / {CURRICULUM_LIMITS.categories.general.total} หน่วยกิต</span>
                   </div>
                   <div className="w-full bg-slate-800/20 h-3 rounded-full overflow-hidden neo-pressed">
-                    <div className="h-3 rounded-full transition-all duration-500" style={{ 
-                      width: `${Math.min(100, (academicCalculations.categoryCredits.general.total / CURRICULUM_LIMITS.categories.general.total) * 100)}%`, 
-                      backgroundColor: theme.primary 
-                    }} />
+                    <div className="h-3 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (academicCalculations.categoryCredits.general.total / CURRICULUM_LIMITS.categories.general.total) * 100)}%`, backgroundColor: theme.primary }} />
                   </div>
-                  {/* General Education Subcategory Badges */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2">
                     {Object.entries(CURRICULUM_LIMITS.categories.general.subcategories).map(([key, value]) => {
                       const earned = academicCalculations.categoryCredits.general[key] || 0;
@@ -640,33 +557,24 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 2. Core */}
                 <div className="space-y-2 pt-4 border-t border-slate-700/10">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-bold">2. กลุ่มวิชาแกน (Core Courses)</span>
                     <span className="font-semibold text-xs">{academicCalculations.categoryCredits.core.total} / {CURRICULUM_LIMITS.categories.core.total} หน่วยกิต</span>
                   </div>
                   <div className="w-full bg-slate-800/20 h-3 rounded-full overflow-hidden neo-pressed">
-                    <div className="h-3 rounded-full transition-all duration-500" style={{ 
-                      width: `${Math.min(100, (academicCalculations.categoryCredits.core.total / CURRICULUM_LIMITS.categories.core.total) * 100)}%`, 
-                      backgroundColor: theme.secondary 
-                    }} />
+                    <div className="h-3 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (academicCalculations.categoryCredits.core.total / CURRICULUM_LIMITS.categories.core.total) * 100)}%`, backgroundColor: theme.secondary }} />
                   </div>
                 </div>
 
-                {/* 3. Specialized */}
                 <div className="space-y-2 pt-4 border-t border-slate-700/10">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-bold">3. กลุ่มวิชาเฉพาะ (Specialization)</span>
                     <span className="font-semibold text-xs">{academicCalculations.categoryCredits.specialized.total} / {CURRICULUM_LIMITS.categories.specialized.total} หน่วยกิต</span>
                   </div>
                   <div className="w-full bg-slate-800/20 h-3 rounded-full overflow-hidden neo-pressed">
-                    <div className="h-3 rounded-full transition-all duration-500" style={{ 
-                      width: `${Math.min(100, (academicCalculations.categoryCredits.specialized.total / CURRICULUM_LIMITS.categories.specialized.total) * 100)}%`, 
-                      backgroundColor: theme.highlight 
-                    }} />
+                    <div className="h-3 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (academicCalculations.categoryCredits.specialized.total / CURRICULUM_LIMITS.categories.specialized.total) * 100)}%`, backgroundColor: theme.highlight }} />
                   </div>
-                  {/* Specialized Subcategory Badges */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     {Object.entries(CURRICULUM_LIMITS.categories.specialized.subcategories).map(([key, value]) => {
                       const earned = academicCalculations.categoryCredits.specialized[key] || 0;
@@ -683,30 +591,20 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 4. Free Electives */}
                 <div className="space-y-2 pt-4 border-t border-slate-700/10">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-bold">4. หมวดเลือกเสรี (Free Electives)</span>
                     <span className="font-semibold text-xs">{academicCalculations.categoryCredits.free.total} / {CURRICULUM_LIMITS.categories.free.total} หน่วยกิต</span>
                   </div>
                   <div className="w-full bg-slate-800/20 h-3 rounded-full overflow-hidden neo-pressed">
-                    <div className="h-3 rounded-full transition-all duration-500" style={{ 
-                      width: `${Math.min(100, (academicCalculations.categoryCredits.free.total / CURRICULUM_LIMITS.categories.free.total) * 100)}%`, 
-                      backgroundColor: theme.accent 
-                    }} />
+                    <div className="h-3 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (academicCalculations.categoryCredits.free.total / CURRICULUM_LIMITS.categories.free.total) * 100)}%`, backgroundColor: theme.accent }} />
                   </div>
                 </div>
-
               </div>
 
-              {/* Sidebar Quick-Actions & Disqualifier Monitor */}
               <div className="space-y-6">
-                
-                {/* Honor Rules Panel */}
                 <div className="neo-flat p-6 rounded-3xl">
-                  <h3 className="font-bold text-base mb-4 flex items-center gap-2">
-                    <span>🛡️</span> เงื่อนไขเกียรตินิยมประกอบ
-                  </h3>
+                  <h3 className="font-bold text-base mb-4 flex items-center gap-2"><span>🛡️</span> เงื่อนไขเกียรตินิยมประกอบ</h3>
                   <div className="space-y-4">
                     <p className="text-xs" style={{ color: theme.textMuted }}>
                       นอกจาก GPA สะสมรวมตามเกณฑ์แล้ว ผู้เรียนจะต้องผ่านข้อกำหนดพิเศษทั้งหมดเหล่านี้ด้วย
@@ -714,12 +612,7 @@ export default function App() {
 
                     <div className="space-y-3 pt-2">
                       <label className="flex items-center gap-3 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={hasFGrade}
-                          onChange={(e) => setHasFGrade(e.target.checked)}
-                          className="w-5 h-5 rounded-lg border-2 accent-indigo-500 cursor-pointer"
-                        />
+                        <input type="checkbox" checked={hasFGrade} onChange={(e) => setHasFGrade(e.target.checked)} className="w-5 h-5 rounded-lg border-2 accent-indigo-500 cursor-pointer" />
                         <div className="text-xs">
                           <span className="font-semibold block">เคยได้รับเกรด F ในใบผลการเรียน?</span>
                           <span style={{ color: theme.textMuted }}>เกียรตินิยมต้องไม่มีเกรด F ตลอดหลักสูตร</span>
@@ -727,12 +620,7 @@ export default function App() {
                       </label>
 
                       <label className="flex items-center gap-3 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={studyExceeded}
-                          onChange={(e) => setStudyExceeded(e.target.checked)}
-                          className="w-5 h-5 rounded-lg border-2 accent-indigo-500 cursor-pointer"
-                        />
+                        <input type="checkbox" checked={studyExceeded} onChange={(e) => setStudyExceeded(e.target.checked)} className="w-5 h-5 rounded-lg border-2 accent-indigo-500 cursor-pointer" />
                         <div className="text-xs">
                           <span className="font-semibold block">ระยะเวลาเรียนเกิน 4 ปีหลัก?</span>
                           <span style={{ color: theme.textMuted }}>ต้องจบการศึกษาภายในเวลาปกติของหลักสูตร</span>
@@ -740,12 +628,7 @@ export default function App() {
                       </label>
 
                       <label className="flex items-center gap-3 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={repeatedCourse}
-                          onChange={(e) => setRepeatedCourse(e.target.checked)}
-                          className="w-5 h-5 rounded-lg border-2 accent-indigo-500 cursor-pointer"
-                        />
+                        <input type="checkbox" checked={repeatedCourse} onChange={(e) => setRepeatedCourse(e.target.checked)} className="w-5 h-5 rounded-lg border-2 accent-indigo-500 cursor-pointer" />
                         <div className="text-xs">
                           <span className="font-semibold block">เคยลงทะเบียนเพื่อปรับเกรด/ซ้ำ?</span>
                           <span style={{ color: theme.textMuted }}>ต้องไม่เคยลงทะเบียนเรียนซ้ำในรายวิชาเดิม</span>
@@ -754,27 +637,19 @@ export default function App() {
                     </div>
 
                     <div className="p-3.5 rounded-2xl neo-pressed text-[11px] leading-relaxed mt-2" style={{ color: theme.textMuted }}>
-                      💡 <span className="font-semibold text-slate-200">เกณฑ์คำนวณเกรด:</span><br/>
-                      เกียรตินิยมอันดับ 1: GPA ≥ 3.75 <br/>
+                      💡 <span className="font-semibold" style={{ color: theme.text }}>เกณฑ์คำนวณเกรด:</span><br />
+                      เกียรตินิยมอันดับ 1: GPA ≥ 3.75 <br />
                       เกียรตินิยมอันดับ 2: GPA 3.25 - 3.74
                     </div>
                   </div>
                 </div>
 
-                {/* Add Subject Quick Button */}
-                <button 
-                  onClick={handleOpenAddModal}
-                  className="w-full py-4 rounded-2xl neo-flat text-sm font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all"
-                  style={{ color: theme.primary }}
-                >
+                <button onClick={handleOpenAddModal} className="w-full py-4 rounded-2xl neo-flat text-sm font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all" style={{ color: theme.primary }}>
                   <span className="text-lg">➕</span> เพิ่มรายวิชาเข้าเทอมเรียน
                 </button>
-
               </div>
-
             </div>
 
-            {/* Recent Subjects List snippet */}
             <div className="neo-flat p-6 rounded-3xl">
               <div className="flex justify-between items-center mb-6">
                 <div>
@@ -788,7 +663,7 @@ export default function App() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {subjects.slice(-4).reverse().map(subj => (
-                  <div key={subj.id} className="neo-pressed p-4 rounded-2xl flex justify-between items-center border border-slate-700/10 hover:border-indigo-500/20 transition-all">
+                  <div key={subj.id} className="neo-pressed p-4 rounded-2xl flex justify-between items-center border border-slate-700/10 transition-all">
                     <div className="space-y-1">
                       <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full" style={{ backgroundColor: theme.primary + '20', color: theme.primary }}>
                         {subj.code}
@@ -803,7 +678,7 @@ export default function App() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xl font-extrabold w-10 h-10 rounded-xl neo-flat flex items-center justify-center text-slate-100" style={{ color: theme.highlight }}>
+                      <span className="text-xl font-extrabold w-10 h-10 rounded-xl neo-flat flex items-center justify-center" style={{ color: theme.highlight }}>
                         {subj.grade}
                       </span>
                     </div>
@@ -811,31 +686,22 @@ export default function App() {
                 ))}
               </div>
             </div>
-
           </div>
         )}
 
-        {/* ==========================================
-            TAB CONTENT: SUBJECTS MANAGEMENT
-            ========================================== */}
+        {/* SUBJECTS */}
         {activeTab === 'subjects' && (
           <div className="space-y-6">
-            
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/10 p-4 rounded-3xl neo-pressed">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 rounded-3xl neo-pressed">
               <div>
                 <h3 className="font-extrabold text-lg">รายการทะเบียนรายวิชาเพื่อติดตาม</h3>
                 <p className="text-xs" style={{ color: theme.textMuted }}>ท่านสามารถเพิ่ม ลบ หรือแก้ไขข้อมูลหน่วยกิตและผลเกรดในส่วนนี้</p>
               </div>
-              <button 
-                onClick={handleOpenAddModal}
-                className="py-3 px-5 rounded-2xl neo-btn text-xs font-bold flex items-center gap-2"
-                style={{ color: theme.primary }}
-              >
+              <button onClick={handleOpenAddModal} className="py-3 px-5 rounded-2xl neo-btn text-xs font-bold flex items-center gap-2" style={{ color: theme.primary }}>
                 <span>➕</span> เพิ่มวิชาใหม่
               </button>
             </div>
 
-            {/* Quick Summary in Subject Page */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="neo-pressed p-3 rounded-2xl text-center">
                 <span className="text-[10px] block" style={{ color: theme.textMuted }}>วิชาทั้งหมด</span>
@@ -847,7 +713,7 @@ export default function App() {
               </div>
               <div className="neo-pressed p-3 rounded-2xl text-center">
                 <span className="text-[10px] block" style={{ color: theme.textMuted }}>GPA คำนวณ</span>
-                <span className="font-black text-lg text-indigo-400">{academicCalculations.gpac.toFixed(2)}</span>
+                <span className="font-black text-lg" style={{ color: theme.primary }}>{academicCalculations.gpac.toFixed(2)}</span>
               </div>
               <div className="neo-pressed p-3 rounded-2xl text-center">
                 <span className="text-[10px] block" style={{ color: theme.textMuted }}>สถานะผลการศึกษา</span>
@@ -857,7 +723,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Subjects Table/List View */}
             <div className="neo-flat p-6 rounded-3xl overflow-hidden">
               {subjects.length === 0 ? (
                 <div className="text-center py-12">
@@ -880,54 +745,28 @@ export default function App() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700/10 text-xs sm:text-sm">
-                      {subjects.sort((a,b) => {
-                        if (a.year !== b.year) return a.year - b.year;
-                        if (a.semester !== b.semester) return a.semester.localeCompare(b.semester);
-                        return a.code.localeCompare(b.code);
-                      }).map(subj => (
-                        <tr key={subj.id} className="hover:bg-slate-700/5 transition-colors">
-                          <td className="py-3.5 font-medium whitespace-nowrap">
-                            ปี {subj.year} เทอม {subj.semester}
-                          </td>
+                      {sortedSubjects.map(subj => (
+                        <tr key={subj.id}>
+                          <td className="py-3.5 font-medium whitespace-nowrap">ปี {subj.year} เทอม {subj.semester}</td>
                           <td className="py-3.5 whitespace-nowrap">
-                            <span className="font-bold px-2 py-1 rounded-lg neo-pressed text-[11px]" style={{ color: theme.primary }}>
-                              {subj.code}
-                            </span>
+                            <span className="font-bold px-2 py-1 rounded-lg neo-pressed text-[11px]" style={{ color: theme.primary }}>{subj.code}</span>
                           </td>
-                          <td className="py-3.5 font-semibold">
-                            {subj.name}
-                          </td>
+                          <td className="py-3.5 font-semibold">{subj.name}</td>
                           <td className="py-3.5">
                             <span className="text-[11px] opacity-90 capitalize">
-                              {subj.category === 'general' ? `Gen-Ed (${subj.subcategory})` : 
-                               subj.category === 'specialized' ? `วิชาเฉพาะ (${subj.subcategory === 'compulsory' ? 'บังคับ' : 'เลือก'})` : 
-                               subj.category === 'core' ? 'วิชาแกน' : 'เลือกเสรี'}
+                              {subj.category === 'general' ? `Gen-Ed (${subj.subcategory})` :
+                                subj.category === 'specialized' ? `วิชาเฉพาะ (${subj.subcategory === 'compulsory' ? 'บังคับ' : 'เลือก'})` :
+                                subj.category === 'core' ? 'วิชาแกน' : 'เลือกเสรี'}
                             </span>
                           </td>
-                          <td className="py-3.5 text-center font-bold">
-                            {subj.credits}
-                          </td>
+                          <td className="py-3.5 text-center font-bold">{subj.credits}</td>
                           <td className="py-3.5 text-center">
-                            <span className="font-extrabold text-sm px-2.5 py-1 rounded-xl bg-slate-800/40 inline-block text-slate-200" style={{ color: theme.highlight }}>
-                              {subj.grade}
-                            </span>
+                            <span className="font-extrabold text-sm px-2.5 py-1 rounded-xl neo-pressed inline-block" style={{ color: theme.highlight }}>{subj.grade}</span>
                           </td>
                           <td className="py-3.5 text-right whitespace-nowrap">
                             <div className="inline-flex gap-2">
-                              <button 
-                                onClick={() => handleOpenEditModal(subj)}
-                                className="w-8 h-8 rounded-xl neo-btn text-xs text-blue-400 flex items-center justify-center hover:scale-105"
-                                title="แก้ไขรายวิชา"
-                              >
-                                ✏️
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteSubject(subj.id)}
-                                className="w-8 h-8 rounded-xl neo-btn text-xs text-red-400 flex items-center justify-center hover:scale-105"
-                                title="ลบวิชา"
-                              >
-                                🗑️
-                              </button>
+                              <button onClick={() => handleOpenEditModal(subj)} className="w-8 h-8 rounded-xl neo-btn text-xs flex items-center justify-center hover:scale-105" title="แก้ไขรายวิชา">✏️</button>
+                              <button onClick={() => handleDeleteSubject(subj.id)} className="w-8 h-8 rounded-xl neo-btn text-xs flex items-center justify-center hover:scale-105" title="ลบวิชา">🗑️</button>
                             </div>
                           </td>
                         </tr>
@@ -937,17 +776,12 @@ export default function App() {
                 </div>
               )}
             </div>
-
           </div>
         )}
 
-        {/* ==========================================
-            TAB CONTENT: ANALYTICS
-            ========================================== */}
+        {/* ANALYTICS */}
         {activeTab === 'analytics' && (
           <div className="space-y-8">
-            
-            {/* GPA Performance Trend Line Chart (Pure SVG Dynamic Line) */}
             <div className="neo-flat p-6 rounded-3xl">
               <div className="mb-6">
                 <h3 className="font-bold text-lg">แนวโน้มผลการเรียนรายเทอม (GPA Trend Line)</h3>
@@ -961,11 +795,9 @@ export default function App() {
                 </div>
               ) : (
                 <div>
-                  {/* SVG Line Graph Container */}
                   <div className="w-full overflow-x-auto">
                     <div className="min-w-[600px] h-[240px] px-4 relative">
                       <svg viewBox="0 0 600 200" className="w-full h-full overflow-visible">
-                        {/* Define Gradients */}
                         <defs>
                           <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor={theme.primary} stopOpacity="0.4" />
@@ -973,7 +805,6 @@ export default function App() {
                           </linearGradient>
                         </defs>
 
-                        {/* Grid lines */}
                         {[0, 1, 2, 3, 4].map((yVal) => {
                           const yPos = 180 - (yVal * 40);
                           return (
@@ -984,43 +815,31 @@ export default function App() {
                           );
                         })}
 
-                        {/* Chart Line drawing */}
                         {(() => {
                           const pointsCount = academicCalculations.termPerformance.length;
                           const gap = 500 / (pointsCount - 1 || 1);
-                          const coords = academicCalculations.termPerformance.map((item, index) => {
-                            const x = 60 + index * gap;
-                            const y = 180 - (item.gpa * 40); // Grade 4.0 mapped to y=20, Grade 0 mapped to y=180
-                            return { x, y, label: item.label, gpa: item.gpa };
-                          });
+                          const coords = academicCalculations.termPerformance.map((item, index) => ({
+                            x: 60 + index * gap,
+                            y: 180 - (item.gpa * 40),
+                            label: item.label,
+                            gpa: item.gpa
+                          }));
 
-                          const pathD = coords.reduce((acc, curr, idx) => {
-                            return idx === 0 ? `M ${curr.x} ${curr.y}` : `${acc} L ${curr.x} ${curr.y}`;
-                          }, '');
-
+                          const pathD = coords.reduce((acc, curr, idx) => idx === 0 ? `M ${curr.x} ${curr.y}` : `${acc} L ${curr.x} ${curr.y}`, '');
                           const areaD = coords.length > 0 ? `${pathD} L ${coords[coords.length - 1].x} 180 L ${coords[0].x} 180 Z` : '';
 
                           return (
-                            <>
-                              {/* Shaded Area under the curve */}
+                            <React.Fragment>
                               {areaD && <path d={areaD} fill="url(#chartGradient)" />}
-
-                              {/* Main Line */}
                               {pathD && <path d={pathD} fill="none" stroke={theme.primary} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />}
-
-                              {/* Circles at nodes and labels */}
                               {coords.map((c, i) => (
-                                <g key={i} className="group cursor-pointer">
+                                <g key={i} className="cursor-pointer">
                                   <circle cx={c.x} cy={c.y} r="6" fill={theme.highlight} stroke={theme.surface} strokeWidth="2" />
-                                  <text x={c.x} y={c.y - 12} fill={theme.text} fontSize="11" fontWeight="extrabold" textAnchor="middle">
-                                    {c.gpa.toFixed(2)}
-                                  </text>
-                                  <text x={c.x} y="195" fill={theme.textMuted} fontSize="9" fontWeight="medium" textAnchor="middle">
-                                    {c.label}
-                                  </text>
+                                  <text x={c.x} y={c.y - 12} fill={theme.text} fontSize="11" fontWeight="bold" textAnchor="middle">{c.gpa.toFixed(2)}</text>
+                                  <text x={c.x} y="195" fill={theme.textMuted} fontSize="9" textAnchor="middle">{c.label}</text>
                                 </g>
                               ))}
-                            </>
+                            </React.Fragment>
                           );
                         })()}
                       </svg>
@@ -1033,10 +852,7 @@ export default function App() {
               )}
             </div>
 
-            {/* General Distribution and Insights */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              
-              {/* Core Credits Completion Gauge */}
               <div className="neo-flat p-6 rounded-3xl space-y-4">
                 <h4 className="font-bold text-base">สถิติสัดส่วนหน่วยกิตที่เรียนผ่านแล้ว</h4>
                 <div className="space-y-4 pt-2">
@@ -1062,20 +878,13 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Comprehensive Academic Insights */}
               <div className="neo-flat p-6 rounded-3xl flex flex-col justify-between">
                 <div>
                   <h4 className="font-bold text-base mb-3">วิเคราะห์ภาพรวมเพื่อการวางแผนการเรียน</h4>
                   <div className="space-y-3 text-xs leading-relaxed" style={{ color: theme.textMuted }}>
-                    <p>
-                      📌 ปัจจุบันท่านสะสมหน่วยกิตสำเร็จไปแล้ว <strong className="text-emerald-400 font-extrabold">{academicCalculations.totalEarnedCredits} หน่วยกิต</strong> เหลือหน่วยกิตที่ต้องศึกษาอีกอย่างน้อย <strong className="text-amber-400 font-extrabold">{academicCalculations.remainingCredits} หน่วยกิต</strong>
-                    </p>
-                    <p>
-                      📌 หมวดศึกษาทั่วไปมีสัดส่วนกลุ่มวิชาย่อยที่ต้องตรวจสอบอย่างเข้มงวด โดยเฉพาะ <span className="font-bold">กลุ่มวิชาภาษาต่างประเทศ (ขั้นต่ำ 6 นก.)</span> และหมวดหมู่อื่น ๆ ขั้นต่ำ 3 หน่วยกิต
-                    </p>
-                    <p>
-                      📌 การรักษาระดับผลการเรียนเฉลี่ยไม่ให้ต่ำกว่า 3.25 และหลีกเลี่ยงการติด F หรือการลงเรียนซ้ำเป็นกุญแจสำคัญสู่ความสำเร็จการศึกษาระดับเกียรตินิยม
-                    </p>
+                    <p>📌 ปัจจุบันท่านสะสมหน่วยกิตสำเร็จไปแล้ว <strong className="text-emerald-400 font-extrabold">{academicCalculations.totalEarnedCredits} หน่วยกิต</strong> เหลือหน่วยกิตที่ต้องศึกษาอีกอย่างน้อย <strong className="text-amber-400 font-extrabold">{academicCalculations.remainingCredits} หน่วยกิต</strong></p>
+                    <p>📌 หมวดศึกษาทั่วไปมีสัดส่วนกลุ่มวิชาย่อยที่ต้องตรวจสอบอย่างเข้มงวด โดยเฉพาะ <span className="font-bold">กลุ่มวิชาภาษาต่างประเทศ (ขั้นต่ำ 6 นก.)</span> และหมวดหมู่อื่น ๆ ขั้นต่ำ 3 หน่วยกิต</p>
+                    <p>📌 การรักษาระดับผลการเรียนเฉลี่ยไม่ให้ต่ำกว่า 3.25 และหลีกเลี่ยงการติด F หรือการลงเรียนซ้ำเป็นกุญแจสำคัญสู่ความสำเร็จการศึกษาระดับเกียรตินิยม</p>
                   </div>
                 </div>
                 <div className="p-4 rounded-2xl neo-pressed text-center text-xs mt-4">
@@ -1085,18 +894,13 @@ export default function App() {
                   <p className="text-[10px] opacity-75">คำนวณข้อมูลเรียลไทม์ผ่านโครงสร้างหลักสูตร 133 หน่วยกิต</p>
                 </div>
               </div>
-
             </div>
-
           </div>
         )}
 
-        {/* ==========================================
-            TAB CONTENT: HONOR PREDICTOR DETAILED
-            ========================================== */}
+        {/* PREDICT */}
         {activeTab === 'predict' && (
           <div className="space-y-6">
-            
             <div className="neo-flat p-8 rounded-3xl text-center space-y-4">
               <span className="text-5xl block animate-bounce">🏆</span>
               <h3 className="font-black text-2xl">ระบบทำนายผลเกียรตินิยมอัตโนมัติ</h3>
@@ -1104,45 +908,35 @@ export default function App() {
                 ประเมินโอกาสการคว้าเกียรตินิยมอันดับ 1 และ 2 ของท่านโดยวัดจากกฎเกณฑ์ทางวิชาการและวิเคราะห์เงื่อนไขข้อยกเว้นอย่างเป็นระบบ
               </p>
 
-              {/* Status Indicator Panel */}
               <div className="p-6 rounded-2xl max-w-md mx-auto neo-pressed mt-6 space-y-3">
-                <span className="text-xs uppercase font-extrabold tracking-widest block" style={{ color: theme.textMuted }}>
-                  ผลการจำลอง ณ ปัจจุบัน
-                </span>
+                <span className="text-xs uppercase font-extrabold tracking-widest block" style={{ color: theme.textMuted }}>ผลการจำลอง ณ ปัจจุบัน</span>
                 <span className="text-3xl font-black block" style={{ color: academicCalculations.honorStatus.includes('อันดับ') ? theme.primary : '#FF5B5B' }}>
                   {academicCalculations.honorStatus}
                 </span>
-                <p className="text-xs" style={{ color: theme.textMuted }}>
-                  {academicCalculations.honorMessage}
-                </p>
+                <p className="text-xs" style={{ color: theme.textMuted }}>{academicCalculations.honorMessage}</p>
               </div>
             </div>
 
-            {/* Conditions Checkpoints list */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
               <div className="neo-flat p-6 rounded-3xl space-y-4">
                 <h4 className="font-bold text-base">เช็กพอยต์คะแนนสะสมหลัก</h4>
-                
                 <div className="space-y-4 pt-2 text-xs">
-                  <div className="flex justify-between items-center p-3 rounded-2xl neo-pressed">
+                  <div className="flex justify-between items-center gap-3 p-3 rounded-2xl neo-pressed">
                     <div>
                       <span className="font-bold block">GPA สะสม (ปัจจุบัน {academicCalculations.gpac.toFixed(2)})</span>
                       <span style={{ color: theme.textMuted }}>เกณฑ์เกียรตินิยมอันดับ 1 คือ ≥ 3.75, อันดับ 2 คือ ≥ 3.25</span>
                     </div>
-                    <span className={`text-base font-bold ${academicCalculations.gpac >= 3.25 ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`text-base font-bold whitespace-nowrap ${academicCalculations.gpac >= 3.25 ? 'text-green-400' : 'text-red-400'}`}>
                       {academicCalculations.gpac >= 3.25 ? 'ผ่านเกณฑ์เกรด' : 'ตกเกณฑ์เกรด'}
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center p-3 rounded-2xl neo-pressed">
+                  <div className="flex justify-between items-center gap-3 p-3 rounded-2xl neo-pressed">
                     <div>
                       <span className="font-bold block">ความสมบูรณ์การลงทะเบียน</span>
                       <span style={{ color: theme.textMuted }}>ลงทะเบียนสำเร็จแล้ว {academicCalculations.totalEarnedCredits} จาก 133 หน่วยกิต</span>
                     </div>
-                    <span className="text-xs font-bold text-indigo-400">
-                      สะสม {academicCalculations.percentComplete}%
-                    </span>
+                    <span className="text-xs font-bold whitespace-nowrap" style={{ color: theme.primary }}>สะสม {academicCalculations.percentComplete}%</span>
                   </div>
                 </div>
               </div>
@@ -1152,140 +946,75 @@ export default function App() {
                 <p className="text-xs" style={{ color: theme.textMuted }}>คุณสมบัติเพิ่มเติมเพื่อคงสภาพเกียรตินิยม</p>
 
                 <div className="space-y-3 pt-2 text-xs">
-                  <div className="flex justify-between items-center p-3 rounded-2xl neo-pressed">
+                  <div className="flex justify-between items-center gap-3 p-3 rounded-2xl neo-pressed">
                     <span>ไม่มีผลการเรียนเกรด F</span>
-                    <span className={`font-bold ${!hasFGrade ? 'text-green-400' : 'text-red-400'}`}>
-                      {!hasFGrade ? 'สมบูรณ์ (ผ่าน)' : 'ตรวจพบวิชา F (ตก)'}
-                    </span>
+                    <span className={`font-bold whitespace-nowrap ${!hasFGrade ? 'text-green-400' : 'text-red-400'}`}>{!hasFGrade ? 'สมบูรณ์ (ผ่าน)' : 'ตรวจพบวิชา F (ตก)'}</span>
                   </div>
-
-                  <div className="flex justify-between items-center p-3 rounded-2xl neo-pressed">
+                  <div className="flex justify-between items-center gap-3 p-3 rounded-2xl neo-pressed">
                     <span>ระยะการศึกษาเป็นไปตามเวลาปกติ (4 ปี)</span>
-                    <span className={`font-bold ${!studyExceeded ? 'text-green-400' : 'text-red-400'}`}>
-                      {!studyExceeded ? 'ในกำหนดเวลา (ผ่าน)' : 'จบล่าช้า (ตก)'}
-                    </span>
+                    <span className={`font-bold whitespace-nowrap ${!studyExceeded ? 'text-green-400' : 'text-red-400'}`}>{!studyExceeded ? 'ในกำหนดเวลา (ผ่าน)' : 'จบล่าช้า (ตก)'}</span>
                   </div>
-
-                  <div className="flex justify-between items-center p-3 rounded-2xl neo-pressed">
+                  <div className="flex justify-between items-center gap-3 p-3 rounded-2xl neo-pressed">
                     <span>ไม่เคยรีเกรดหรือเรียนซ้ำวิชาที่ผ่านแล้ว</span>
-                    <span className={`font-bold ${!repeatedCourse ? 'text-green-400' : 'text-red-400'}`}>
-                      {!repeatedCourse ? 'ไม่มีประวัติเรียนซ้ำ (ผ่าน)' : 'มีประวัติเรียนซ้ำ (ตก)'}
-                    </span>
+                    <span className={`font-bold whitespace-nowrap ${!repeatedCourse ? 'text-green-400' : 'text-red-400'}`}>{!repeatedCourse ? 'ไม่มีประวัติเรียนซ้ำ (ผ่าน)' : 'มีประวัติเรียนซ้ำ (ตก)'}</span>
                   </div>
                 </div>
               </div>
-
             </div>
-
           </div>
         )}
-
       </div>
 
-      {/* ==========================================
-          MODAL: ADD/EDIT SUBJECT (Neumorphic Style)
-          ========================================== */}
+      {/* MODAL */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div 
-            className="w-full max-w-lg p-6 rounded-3xl neo-flat relative animate-in fade-in zoom-in duration-200"
-            style={{ backgroundColor: theme.surface, color: theme.text }}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-lg p-6 rounded-3xl neo-flat relative my-8" style={{ backgroundColor: theme.surface, color: theme.text }}>
             <div className="flex justify-between items-center border-b border-slate-700/20 pb-4 mb-4">
-              <h3 className="font-extrabold text-lg">
-                {editingSubject ? 'แก้ไขรายวิชาเรียน' : 'เพิ่มรายวิชาเรียนใหม่'}
-              </h3>
-              <button 
-                onClick={() => setShowAddModal(false)}
-                className="w-8 h-8 rounded-full neo-btn flex items-center justify-center font-bold text-xs"
-              >
-                ✕
-              </button>
+              <h3 className="font-extrabold text-lg">{editingSubject ? 'แก้ไขรายวิชาเรียน' : 'เพิ่มรายวิชาเรียนใหม่'}</h3>
+              <button onClick={() => setShowAddModal(false)} className="w-8 h-8 rounded-full neo-btn flex items-center justify-center font-bold text-xs">✕</button>
             </div>
 
             <form onSubmit={handleSaveSubject} className="space-y-4 text-xs md:text-sm">
-              
               <div className="grid grid-cols-2 gap-4">
-                {/* Subject Code */}
                 <div className="space-y-1">
                   <label className="block font-bold">รหัสวิชา</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="เช่น ENG101"
-                    value={formCode}
-                    onChange={(e) => setFormCode(e.target.value)}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none focus:border-indigo-500 border border-transparent transition-all"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  />
+                  <input type="text" required placeholder="เช่น ENG101" value={formCode} onChange={(e) => setFormCode(e.target.value)}
+                    className="w-full p-3 rounded-xl neo-pressed outline-none border border-transparent transition-all"
+                    style={{ backgroundColor: theme.surface, color: theme.text }} />
                 </div>
-
-                {/* Subject Name */}
                 <div className="space-y-1 col-span-1">
                   <label className="block font-bold">ชื่อวิชา</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="ภาษาอังกฤษพื้นฐาน"
-                    value={formName}
-                    onChange={(e) => setFormName(e.target.value)}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none focus:border-indigo-500 border border-transparent transition-all"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  />
+                  <input type="text" required placeholder="ภาษาอังกฤษพื้นฐาน" value={formName} onChange={(e) => setFormName(e.target.value)}
+                    className="w-full p-3 rounded-xl neo-pressed outline-none border border-transparent transition-all"
+                    style={{ backgroundColor: theme.surface, color: theme.text }} />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                {/* Credits Selector */}
                 <div className="space-y-1">
                   <label className="block font-bold">หน่วยกิต</label>
-                  <select
-                    value={formCredits}
-                    onChange={(e) => setFormCredits(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  >
+                  <select value={formCredits} onChange={(e) => setFormCredits(Number(e.target.value))} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer" style={{ backgroundColor: theme.surface, color: theme.text }}>
                     {[1, 2, 3, 4, 6].map(c => <option key={c} value={c}>{c} หน่วยกิต</option>)}
                   </select>
                 </div>
-
-                {/* Grade Selector */}
                 <div className="space-y-1">
                   <label className="block font-bold">เกรดที่ได้</label>
-                  <select
-                    value={formGrade}
-                    onChange={(e) => setFormGrade(e.target.value)}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer font-bold"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  >
+                  <select value={formGrade} onChange={(e) => setFormGrade(e.target.value)} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer font-bold" style={{ backgroundColor: theme.surface, color: theme.text }}>
                     {Object.keys(GRADE_VALUES).map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                 </div>
-
-                {/* Semester Year */}
                 <div className="space-y-1">
                   <label className="block font-bold">ปีการศึกษา</label>
-                  <select
-                    value={formYear}
-                    onChange={(e) => setFormYear(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  >
+                  <select value={formYear} onChange={(e) => setFormYear(Number(e.target.value))} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer" style={{ backgroundColor: theme.surface, color: theme.text }}>
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(y => <option key={y} value={y}>ปี {y}</option>)}
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Academic Category */}
                 <div className="space-y-1">
                   <label className="block font-bold">หมวดหมู่วิชาหลัก</label>
-                  <select
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  >
+                  <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer" style={{ backgroundColor: theme.surface, color: theme.text }}>
                     <option value="general">หมวดศึกษาทั่วไป (Gen-Ed)</option>
                     <option value="core">กลุ่มวิชาแกน</option>
                     <option value="specialized">กลุ่มวิชาเฉพาะ</option>
@@ -1293,16 +1022,10 @@ export default function App() {
                   </select>
                 </div>
 
-                {/* Subcategory */}
                 {formCategory === 'general' && (
                   <div className="space-y-1">
                     <label className="block font-bold">กลุ่มรายวิชาย่อย (ศึกษาทั่วไป)</label>
-                    <select
-                      value={formSubcategory}
-                      onChange={(e) => setFormSubcategory(e.target.value)}
-                      className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer"
-                      style={{ backgroundColor: theme.surface, color: theme.text }}
-                    >
+                    <select value={formSubcategory} onChange={(e) => setFormSubcategory(e.target.value)} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer" style={{ backgroundColor: theme.surface, color: theme.text }}>
                       <option value="thai">กลุ่มวิชาภาษาไทย</option>
                       <option value="foreign">กลุ่มวิชาภาษาต่างประเทศ</option>
                       <option value="science">กลุ่มวิชาวิทยาศาสตร์</option>
@@ -1316,41 +1039,25 @@ export default function App() {
                 {formCategory === 'specialized' && (
                   <div className="space-y-1">
                     <label className="block font-bold">กลุ่มวิชาย่อย (วิชาเฉพาะ)</label>
-                    <select
-                      value={formSubcategory}
-                      onChange={(e) => setFormSubcategory(e.target.value)}
-                      className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer"
-                      style={{ backgroundColor: theme.surface, color: theme.text }}
-                    >
+                    <select value={formSubcategory} onChange={(e) => setFormSubcategory(e.target.value)} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer" style={{ backgroundColor: theme.surface, color: theme.text }}>
                       <option value="compulsory">กลุ่มวิชาชีพบังคับ</option>
                       <option value="elective">กลุ่มวิชาชีพเลือก</option>
                     </select>
                   </div>
                 )}
 
-                {/* Fallback space filler if no subcategory needed */}
                 {formCategory !== 'general' && formCategory !== 'specialized' && (
                   <div className="space-y-1 opacity-40">
                     <label className="block font-bold">กลุ่มวิชาย่อย</label>
-                    <input
-                      disabled
-                      value="ไม่ต้องระบุกลุ่มย่อย"
-                      className="w-full p-3 rounded-xl neo-pressed outline-none text-slate-500 bg-slate-800/10"
-                    />
+                    <input disabled value="ไม่ต้องระบุกลุ่มย่อย" className="w-full p-3 rounded-xl neo-pressed outline-none" style={{ backgroundColor: theme.surface, color: theme.textMuted }} />
                   </div>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Semester Part */}
                 <div className="space-y-1">
                   <label className="block font-bold">ภาคการศึกษา</label>
-                  <select
-                    value={formSemester}
-                    onChange={(e) => setFormSemester(e.target.value)}
-                    className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer"
-                    style={{ backgroundColor: theme.surface, color: theme.text }}
-                  >
+                  <select value={formSemester} onChange={(e) => setFormSemester(e.target.value)} className="w-full p-3 rounded-xl neo-pressed outline-none cursor-pointer" style={{ backgroundColor: theme.surface, color: theme.text }}>
                     <option value="1">ภาคเรียนที่ 1</option>
                     <option value="2">ภาคเรียนที่ 2</option>
                     <option value="Summer">ภาคเรียนพิเศษ (Summer)</option>
@@ -1359,31 +1066,24 @@ export default function App() {
               </div>
 
               <div className="flex gap-4 pt-4 border-t border-slate-700/20">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-3 rounded-xl neo-btn font-bold text-center"
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 rounded-xl neo-btn font-bold text-center"
-                  style={{ color: theme.primary }}
-                >
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 rounded-xl neo-btn font-bold text-center">ยกเลิก</button>
+                <button type="submit" className="flex-1 py-3 rounded-xl neo-btn font-bold text-center" style={{ color: theme.primary }}>
                   {editingSubject ? 'บันทึกการแก้ไข' : 'เพิ่มวิชาลงทะเบียน'}
                 </button>
               </div>
-
             </form>
           </div>
         </div>
       )}
 
-      {/* Footer Branding Info */}
       <footer className="max-w-6xl mx-auto mt-12 pt-6 border-t border-slate-700/20 text-center text-xs opacity-60">
         <p>© 2026 Aura Academic Portal. All Rights Reserved. ออกแบบภายใต้กฎบัตรการศึกษาและ Neumorphic Soft UI Design System</p>
       </footer>
     </div>
   );
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
