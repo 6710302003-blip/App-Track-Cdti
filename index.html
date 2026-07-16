@@ -129,14 +129,17 @@ function App() {
   const [dbStatus, setDbStatus] = useState('syncing');
   const [userSession, setUserSession] = useState(() => {
     const savedName = store.get('aura_username');
+    const savedStudentId = store.get('aura_studentid');
     return {
       email: 'academic.dreamer@university.edu',
-      studentId: '6609612345',
+      studentId: savedStudentId || '6609612345',
       fullName: savedName || 'อัครพล เกียรตินิยมเลิศ'
     };
   });
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(userSession.fullName);
+  const [isEditingStudentId, setIsEditingStudentId] = useState(false);
+  const [studentIdDraft, setStudentIdDraft] = useState(userSession.studentId);
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -173,6 +176,24 @@ function App() {
   const handleCancelEditName = () => {
     setNameDraft(userSession.fullName);
     setIsEditingName(false);
+  };
+
+  useEffect(() => { store.set('aura_studentid', userSession.studentId); }, [userSession.studentId]);
+
+  const handleStartEditStudentId = () => {
+    setStudentIdDraft(userSession.studentId);
+    setIsEditingStudentId(true);
+  };
+
+  const handleSaveStudentId = () => {
+    const trimmed = studentIdDraft.trim();
+    if (trimmed) setUserSession(prev => ({ ...prev, studentId: trimmed }));
+    setIsEditingStudentId(false);
+  };
+
+  const handleCancelEditStudentId = () => {
+    setStudentIdDraft(userSession.studentId);
+    setIsEditingStudentId(false);
   };
 
   useEffect(() => {
@@ -473,7 +494,28 @@ function App() {
                   <button onClick={handleStartEditName} className="w-7 h-7 rounded-lg neo-btn text-xs flex items-center justify-center shrink-0" title="แก้ไขชื่อ">✏️</button>
                 </div>
               )}
-              <p className="text-xs" style={{ color: theme.textMuted }}>รหัสประจำตัว: {userSession.studentId} • หลักสูตรวิทยาศาสตรบัณฑิต (133 หน่วยกิต)</p>
+              {isEditingStudentId ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs" style={{ color: theme.textMuted }}>รหัสประจำตัว:</span>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={studentIdDraft}
+                    onChange={(e) => setStudentIdDraft(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveStudentId(); if (e.key === 'Escape') handleCancelEditStudentId(); }}
+                    className="text-xs font-semibold w-full max-w-[140px] px-2 py-1 rounded-lg neo-pressed outline-none border border-transparent"
+                    style={{ backgroundColor: theme.surface, color: theme.text }}
+                  />
+                  <button onClick={handleSaveStudentId} className="w-6 h-6 rounded-lg neo-btn text-[10px] flex items-center justify-center shrink-0" title="บันทึกรหัสนักศึกษา">✅</button>
+                  <button onClick={handleCancelEditStudentId} className="w-6 h-6 rounded-lg neo-btn text-[10px] flex items-center justify-center shrink-0" title="ยกเลิก">✕</button>
+                </div>
+              ) : (
+                <p className="text-xs flex items-center gap-1.5" style={{ color: theme.textMuted }}>
+                  รหัสประจำตัว: {userSession.studentId}
+                  <button onClick={handleStartEditStudentId} className="w-5 h-5 rounded-md neo-btn text-[10px] flex items-center justify-center shrink-0" title="แก้ไขรหัสนักศึกษา">✏️</button>
+                  • หลักสูตรวิทยาศาสตรบัณฑิต (133 หน่วยกิต)
+                </p>
+              )}
             </div>
           </div>
           <div className="text-right w-full sm:w-auto">
