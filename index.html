@@ -127,11 +127,16 @@ function App() {
   });
 
   const [dbStatus, setDbStatus] = useState('syncing');
-  const [userSession] = useState({
-    email: 'academic.dreamer@university.edu',
-    studentId: '6609612345',
-    fullName: 'อัครพล เกียรตินิยมเลิศ'
+  const [userSession, setUserSession] = useState(() => {
+    const savedName = store.get('aura_username');
+    return {
+      email: 'academic.dreamer@university.edu',
+      studentId: '6609612345',
+      fullName: savedName || 'อัครพล เกียรตินิยมเลิศ'
+    };
   });
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState(userSession.fullName);
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -151,6 +156,24 @@ function App() {
   const [repeatedCourse, setRepeatedCourse] = useState(false);
 
   useEffect(() => { store.set('aura_theme', currentTheme); }, [currentTheme]);
+
+  useEffect(() => { store.set('aura_username', userSession.fullName); }, [userSession.fullName]);
+
+  const handleStartEditName = () => {
+    setNameDraft(userSession.fullName);
+    setIsEditingName(true);
+  };
+
+  const handleSaveName = () => {
+    const trimmed = nameDraft.trim();
+    if (trimmed) setUserSession(prev => ({ ...prev, fullName: trimmed }));
+    setIsEditingName(false);
+  };
+
+  const handleCancelEditName = () => {
+    setNameDraft(userSession.fullName);
+    setIsEditingName(false);
+  };
 
   useEffect(() => {
     store.set('aura_subjects', JSON.stringify(subjects));
@@ -428,9 +451,28 @@ function App() {
         {/* User Card */}
         <div className="neo-flat p-5 rounded-3xl mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl neo-pressed flex items-center justify-center text-2xl">🔮</div>
-            <div>
-              <h2 className="text-lg font-bold">{userSession.fullName}</h2>
+            <div className="w-14 h-14 rounded-2xl neo-pressed flex items-center justify-center text-2xl shrink-0">🔮</div>
+            <div className="min-w-0">
+              {isEditingName ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    autoFocus
+                    value={nameDraft}
+                    onChange={(e) => setNameDraft(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') handleCancelEditName(); }}
+                    className="text-lg font-bold w-full max-w-[220px] px-2 py-1 rounded-lg neo-pressed outline-none border border-transparent"
+                    style={{ backgroundColor: theme.surface, color: theme.text }}
+                  />
+                  <button onClick={handleSaveName} className="w-8 h-8 rounded-lg neo-btn text-xs flex items-center justify-center shrink-0" title="บันทึกชื่อ">✅</button>
+                  <button onClick={handleCancelEditName} className="w-8 h-8 rounded-lg neo-btn text-xs flex items-center justify-center shrink-0" title="ยกเลิก">✕</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold truncate">{userSession.fullName}</h2>
+                  <button onClick={handleStartEditName} className="w-7 h-7 rounded-lg neo-btn text-xs flex items-center justify-center shrink-0" title="แก้ไขชื่อ">✏️</button>
+                </div>
+              )}
               <p className="text-xs" style={{ color: theme.textMuted }}>รหัสประจำตัว: {userSession.studentId} • หลักสูตรวิทยาศาสตรบัณฑิต (133 หน่วยกิต)</p>
             </div>
           </div>
